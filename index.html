@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#10242b"/><meta name="description" content="Reconstrua Portomonte: estratégia e decisões em um mundo de fantasia sombria. Jogue offline."/>
+<meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="apple-mobile-web-app-title" content="Portomonte"/>
+<link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" href="./icons/icon-192.png"/><title>Portomonte: Reconstrução</title>
+<style>
+:root{color-scheme:dark;--bg:#091a20;--deep:#10242b;--panel:#173139;--panel2:#1c3941;--edge:#39616a;--cream:#f5e6c8;--muted:#a9c0b9;--gold:#e4bb73;--coral:#f18776;--aqua:#79d5cb;--green:#9acf9d;--ink:#0b1e24;--shadow:0 10px 32px #030b1055;font-family:Georgia,'Palatino Linotype',serif}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#07141b;color:var(--cream);overscroll-behavior:none}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+#shell{width:min(100%,440px);height:100dvh;min-height:560px;margin:auto;position:relative;overflow:hidden;background:linear-gradient(160deg,#102b33,#0b1c24 65%);box-shadow:0 0 75px #000b;display:flex;flex-direction:column}
+#shell:before{content:'';pointer-events:none;position:absolute;inset:0;z-index:0;background:repeating-linear-gradient(90deg,transparent 0 28px,#e5c78404 29px 30px),radial-gradient(ellipse at 50% 0,#a87b4520,transparent 54%)}
+#shell>*{position:relative;z-index:1}.screen{display:none;flex:1;min-height:0;flex-direction:column}.screen.active{display:flex}
+#menu{background:radial-gradient(ellipse at 50% 28%,#27444c,#071920 72%);justify-content:space-around;text-align:center;align-items:center;padding:28px 30px 32px;overflow:auto}.hero-art{position:relative;width:100%;min-height:215px;max-height:280px;flex:1;display:flex;align-items:center;justify-content:center}.hero-art svg{width:100%;height:100%;max-height:290px;filter:drop-shadow(0 8px 20px #02070bb0)}.kicker{font:700 10px/1.2 system-ui,sans-serif;letter-spacing:3px;color:var(--aqua);text-transform:uppercase}.menu-title{font-size:clamp(37px,11vw,52px);line-height:.94;letter-spacing:-1px;margin:9px 0 5px;text-shadow:0 3px 18px #000}.menu-title span{color:var(--gold);display:block}.subtitle{font-size:13px;color:#c2c7b6;line-height:1.65;max-width:300px;margin:7px auto 17px}.ornament{color:var(--gold);font-size:16px;letter-spacing:8px;opacity:.8}.menu-actions{width:100%;display:grid;gap:9px;max-width:330px}.btn{appearance:none;background:linear-gradient(180deg,#eac78d,#bd9352);color:#222018;border:1px solid #ffdb9c;border-radius:12px;padding:12px 13px;font:800 13px/1.2 system-ui,sans-serif;box-shadow:inset 0 1px #ffffff55,0 4px 14px #030b1066;min-height:43px}.btn:active{transform:translateY(1px)}.btn.secondary{color:var(--cream);background:#214149;border-color:#51747c;box-shadow:none}.btn.ghost{color:#cadbd0;background:transparent;border:1px solid #3c6068;box-shadow:none}.btn.danger{background:#703b3b;color:#fff0e6;border-color:#c36b62;box-shadow:none}.btn.small{padding:8px 9px;min-height:34px;border-radius:9px;font-size:11px}.offline{font:600 10px system-ui,sans-serif;color:var(--aqua);margin-top:6px}.offline.wait{color:#f7c07d}.fine{font:10px/1.5 system-ui,sans-serif;color:#849d9e}
+#game-head{flex:none;padding:10px 12px 8px;background:linear-gradient(120deg,#122f37,#142a32);border-bottom:1px solid #4c6d6955}.topline{display:flex;align-items:center;justify-content:space-between;gap:8px}.place-title{font:bold 20px/1.15 Georgia,serif;color:var(--cream)}.chapter{font:600 9px system-ui,sans-serif;color:var(--aqua);letter-spacing:1.2px;text-transform:uppercase}.turn-chip{background:#274951;border:1px solid #4c6b6f;border-radius:9px;padding:5px 9px;font:700 11px system-ui,sans-serif;color:var(--gold);white-space:nowrap}.resources{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:9px}.res{background:#071d25a6;border:1px solid #31545a;border-radius:8px;text-align:center;padding:5px 1px 4px;font:700 13px system-ui,sans-serif;white-space:nowrap}.res span{font-size:12px;display:inline-block;margin-right:2px}.res small{display:block;color:#9bb5b6;font-size:8px;font-weight:600;letter-spacing:.2px;margin-top:2px}.res.low{color:var(--coral);border-color:#985450}
+.metrics{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;margin-top:8px}.metric{font:700 10px system-ui,sans-serif;display:grid;gap:3px}.metric .v{display:flex;justify-content:space-between;color:#cbd9d0}.metric em{font-style:normal;color:var(--gold)}.meter{height:5px;background:#071820;border-radius:8px;overflow:hidden}.meter i{height:100%;display:block;background:linear-gradient(90deg,#68ae9a,#b3e3bf);transition:width .25s}.metric.hope .meter i{background:linear-gradient(90deg,#bd8b56,#e4c685)}.metric.risk .meter i{background:linear-gradient(90deg,#b99c60,#ed756d)}
+#content{min-height:0;flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#395a61 transparent;padding:10px 11px 16px}.page{display:none}.page.active{display:block}.section-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 9px;gap:8px}.section-head h2{font-size:18px;margin:0;letter-spacing:.2px}.section-head small{font:10px system-ui,sans-serif;color:var(--muted)}.section-label{font:800 10px system-ui,sans-serif;color:var(--aqua);letter-spacing:1.6px;text-transform:uppercase;margin:13px 0 8px}
+.map-wrap{position:relative;width:100%;aspect-ratio:1;background:#182d2a;border:2px solid #56756c;border-radius:11px;overflow:hidden;box-shadow:inset 0 0 16px #0007,0 6px 18px #050e1366;touch-action:manipulation}canvas#city{width:100%;height:100%;display:block;touch-action:manipulation}.map-ribbon{position:absolute;pointer-events:none;top:6px;left:6px;padding:5px 7px;border:1px solid #b8ba9a99;background:#0d2327bb;color:#d6dfcd;font:800 9px system-ui,sans-serif;letter-spacing:.4px;border-radius:5px}.map-ribbon.build{background:#6b4e25e8;color:#ffeca8}.legend{display:flex;justify-content:space-between;align-items:center;gap:4px;margin:7px 1px 11px;color:#9eb7b1;font:10px system-ui,sans-serif}.legend b{color:var(--gold)}
+.card{background:linear-gradient(145deg,#1b3b42,#132c34);border:1px solid #45646b;border-radius:12px;padding:12px;box-shadow:0 3px 12px #020c1240;margin-bottom:9px}.card.rubble{border-color:#8f6946}.card h3{font:700 15px Georgia,serif;margin:0 0 4px}.card p{font:11px/1.5 system-ui,sans-serif;color:#b7c9c6;margin:4px 0 9px}.row{display:flex;align-items:center;gap:8px}.between{justify-content:space-between}.tiny{font:10px system-ui,sans-serif;color:var(--muted)}.accent{color:var(--gold)}.good{color:var(--aqua)}.bad{color:var(--coral)}.action-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.tag{font:700 10px system-ui,sans-serif;color:#d2dfd7;background:#275057;border-radius:5px;padding:4px 7px}.tag.gold{color:#e9c889;background:#493c29}.tag.red{color:#f0aaa0;background:#583538}
+#turnbar{display:flex;gap:9px;align-items:center;padding:8px 11px;border-top:1px solid #375459;background:#0b2329;flex:none}#turnbar .btn{flex:1;min-height:40px}#turnbar .orders{font:700 11px/1.5 system-ui,sans-serif;color:var(--aqua);width:83px}#turnbar .orders b{font-size:16px;color:var(--gold)}
+#tabs{display:grid;grid-template-columns:repeat(4,1fr);flex:none;background:#0a171d;border-top:1px solid #39575e;padding-bottom:env(safe-area-inset-bottom);min-height:59px}#tabs button{background:none;color:#91a9ad;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:700 9px system-ui,sans-serif;letter-spacing:.2px;padding:7px 0}.navico{font-size:18px}#tabs button.active{color:var(--gold);background:#1f3940;border-top:2px solid var(--gold)}
+.build-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.build-card{padding:10px;min-height:145px;display:flex;flex-direction:column;justify-content:space-between}.build-card .name{font:700 14px Georgia,serif}.build-card .emoji{font-size:24px;filter:drop-shadow(0 2px 3px #07151c)}.build-card .cost{font:10px/1.5 system-ui,sans-serif;color:#dbc9a8}.build-card .desc{font:10px/1.4 system-ui,sans-serif;color:#9fb7b5;margin:4px 0 7px}.build-card button{width:100%}.filterline{display:flex;gap:5px;overflow-x:auto;margin:8px 0 12px;padding-bottom:3px;scrollbar-width:none}.filterline button{white-space:nowrap;padding:6px 10px;border-radius:15px;background:#203b43;color:#bbccca;border:1px solid #47636b;font:700 10px system-ui,sans-serif}.filterline button.active{background:#cba46b;color:#1c2220;border-color:#e3c48a}
+.project{position:relative}.project h3{font-size:15px}.project p{max-width:100%}.project .award{font:700 10px system-ui,sans-serif;color:var(--aqua)}.factions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.faction{background:#15323a;border:1px solid #46626a;border-radius:10px;padding:10px}.faction h4{font-size:12px;margin:0 0 7px}.faction .meter{height:6px}.faction p{font:10px system-ui,sans-serif;color:var(--muted);margin:7px 0 0}.logentry{border-bottom:1px solid #3d565e;padding:10px 4px}.logentry .day{color:var(--gold);font:700 10px system-ui,sans-serif}.logentry p{margin:4px 0;font:11px/1.5 system-ui,sans-serif;color:#d1d9cd}.divider{border-top:1px solid #3a5961;margin:12px 0}.statline{display:flex;justify-content:space-between;font:11px system-ui,sans-serif;padding:5px 0;border-bottom:1px solid #45606466}
+#overlay{display:none;position:absolute;inset:0;z-index:20;background:#030d12d9;align-items:center;justify-content:center;padding:18px 16px calc(18px + env(safe-area-inset-bottom));backdrop-filter:blur(5px)}#overlay.show{display:flex}.modal{width:100%;max-height:92%;overflow-y:auto;background:linear-gradient(160deg,#24464a,#112830 70%);border:1px solid #d6ab688c;box-shadow:0 15px 65px #000c,inset 0 1px #e2c98f44;border-radius:15px;padding:18px;scrollbar-width:thin}.modal .emblem{font-size:32px;text-align:center;margin:2px 0 7px}.modal h2{font:700 25px/1.05 Georgia,serif;color:var(--gold);text-align:center;margin:0 0 8px}.modal .episode{font:800 10px system-ui,sans-serif;letter-spacing:2px;color:var(--aqua);text-align:center;text-transform:uppercase;margin-bottom:9px}.modal p{font:12px/1.65 system-ui,sans-serif;color:#d4ddd3}.choice{width:100%;background:#173840;border:1px solid #58747b;border-radius:10px;margin-top:9px;padding:11px;text-align:left;color:var(--cream)}.choice:disabled{opacity:.45}.choice b{display:block;font:700 13px Georgia,serif}.choice small{display:block;color:#b1ccc5;font:10px/1.45 system-ui,sans-serif;margin-top:5px}.modal .btn{width:100%;margin-top:8px}.modal .desc{font:10px system-ui,sans-serif;color:var(--muted)}
+.toast{position:absolute;z-index:30;bottom:126px;left:18px;right:18px;border:1px solid #bd9567;background:#112b32f2;border-radius:10px;text-align:center;padding:10px;color:#fff0d4;font:700 11px/1.4 system-ui,sans-serif;box-shadow:0 8px 20px #0009;pointer-events:none;animation:toast .25s ease}@keyframes toast{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+body.wide #shell{border-left:1px solid #274047;border-right:1px solid #274047}@media(min-width:500px){body{display:flex;justify-content:center;align-items:center}#shell{height:min(100dvh,950px);border-radius:13px}}
+@media(max-height:730px){#game-head{padding:7px 10px 6px}.resources{margin-top:5px}.metrics{margin-top:5px}#content{padding-top:7px}.menu-title{font-size:39px}.hero-art{min-height:145px}}
+</style>
+</head>
+<body><div id="shell">
+<section id="menu" class="screen active">
+ <div class="kicker">CARCAÇA · CRÔNICAS DOS SOBREVIVENTES</div>
+ <div class="hero-art"><svg viewBox="0 0 360 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+ <defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#467c79"/><stop offset="1" stop-color="#1c3844"/></linearGradient></defs>
+ <circle cx="181" cy="110" r="91" stroke="#a9a87d" stroke-width="1.4" opacity=".3" stroke-dasharray="3 8"/><path d="M23 231c57-10 84-23 143-19 61 5 95 22 172 6" stroke="#dbbd83" opacity=".5"/>
+ <path d="M10 196Q83 170 148 189T354 177v71H10Z" fill="#163840"/><path d="M20 226Q104 218 174 231T350 224" stroke="#65afa9" opacity=".7" stroke-width="3"/>
+ <path d="M81 193v-53l18-15 17 15v53M80 137h38M84 151h28" fill="#10262d" stroke="#c1aa7d" stroke-width="2"/><path d="M88 133l11-27 10 27" fill="#a58a64"/><path d="M94 108l5-11 5 11" stroke="#e2c891" stroke-width="2"/>
+ <path d="M132 198v-56l37-25 38 25v56" fill="#0c242c" stroke="#d4b57e" stroke-width="2.5"/><path d="m129 143 40-38 41 38" stroke="#e4c18a" stroke-width="4"/><path d="M161 196v-32q8-12 17 0v32" fill="#e9ba6e"/><path d="M143 150h12v16h-12zm40 0h12v16h-12z" fill="#70bab8"/>
+ <path d="M226 192v-48l16-17 18 17v48" fill="#0b2530" stroke="#bc9f76" stroke-width="2"/><path d="M231 147h24m-12-20v-30" stroke="#e4c18a" stroke-width="3"/><path d="m233 96 10-16 10 16" fill="#bd9a65"/><path d="M238 164h10v17h-10" fill="#b7d9c3"/>
+ <path d="M40 187q18-56 49-76m200 70q-4-49-41-79M61 165l-31-45m233 16 44-49" stroke="#d4ba8c" stroke-width="8" stroke-linecap="round" opacity=".45"/>
+ <path d="M60 94q60-85 158-53 57 18 85 89" stroke="#c0b596" stroke-width="15" stroke-linecap="round" opacity=".4"/><path d="M55 92q62-76 161-43 55 18 81 78" stroke="#eed4a8" stroke-width="2" opacity=".65"/>
+ <path d="M27 245q44-18 79-2 34 20 70 3 54-19 95-2 30 7 67-7" stroke="#69b3ad" stroke-width="2" opacity=".8"/><path d="m304 204-9-8 9-8 8 8z" fill="#d5af71"/>
+ <g fill="#efd49c"><circle cx="75" cy="63" r="2"/><circle cx="267" cy="62" r="2"/><circle cx="163" cy="25" r="2"/></g>
+ </svg></div>
+ <div><div class="ornament">✦ ─ ❖ ─ ✦</div><h1 class="menu-title">PORTOMONTE<span>RECONSTRUÇÃO</span></h1><div class="subtitle">Das cinzas do culto. Do sangue do mar.<br/>Uma cidade só se ergue com as mãos de seu povo.</div></div>
+ <div class="menu-actions"><button class="btn" id="new-game">✦ NOVA CAMPANHA</button><button class="btn secondary" id="continue-game" style="display:none">↻ CONTINUAR RECONSTRUÇÃO</button><button class="btn ghost" id="how-game">COMO JOGAR</button><div id="offline-menu" class="offline wait">◌ Preparando modo offline…</div><div class="fine">Jogo completo · 30 dias · decisões e múltiplos finais<br/>Instale pelo navegador para jogar sem internet.</div></div>
+</section>
+<section id="playing" class="screen">
+ <header id="game-head"><div class="topline"><div><div class="chapter" id="act-label">ATO I · A CIDADE FERIDA</div><div class="place-title">Portomonte <span style="font-size:12px;color:var(--gold)">⚜</span></div></div><div class="turn-chip" id="day-label">DIA 01 / 30</div></div>
+ <div class="resources" id="resources"></div>
+ <div class="metrics" id="metrics"></div></header>
+ <div id="content">
+  <div class="page active" id="view-city"><div class="section-head"><h2>◈ A cidade</h2><small id="map-hint">Toque para inspecionar</small></div>
+    <div class="map-wrap"><canvas id="city" aria-label="Mapa interativo da cidade"></canvas><div id="map-ribbon" class="map-ribbon">PORTOMONTE · COSTA SUL</div></div><div class="legend"><span>🟫 Ruína</span><span>✦ Ponto histórico</span><span>🌊 Mar de Sangue</span></div>
+    <div id="tile-detail"></div>
+  </div>
+  <div class="page" id="view-build"><div class="section-head"><h2>⚒ Construir</h2><small>1 ordem por construção</small></div><div class="card"><p>Escolha um edifício e toque no terreno livre da cidade. Para aproveitar ruínas, primeiro remova os escombros.</p><div class="row between"><span class="tiny" id="workers-label"></span><span class="tiny" id="build-cap"></span></div></div><div class="filterline" id="build-filters"></div><div class="build-grid" id="build-list"></div></div>
+  <div class="page" id="view-council"><div class="section-head"><h2>♜ Conselho</h2><small>O futuro se decide aqui</small></div><div id="council-list"></div></div>
+  <div class="page" id="view-chronicle"><div class="section-head"><h2>☷ Crônicas</h2><small>O que a cidade recorda</small></div><div id="chronicle-list"></div></div>
+ </div>
+ <div id="turnbar"><div class="orders"><b id="order-count">2</b> ORDENS<br/>RESTANTES</div><button class="btn" id="end-turn">☾ ENCERRAR DIA</button></div>
+ <nav id="tabs" aria-label="Navegação"><button data-page="city" class="active"><span class="navico">▦</span>CIDADE</button><button data-page="build"><span class="navico">⚒</span>CONSTRUIR</button><button data-page="council"><span class="navico">♜</span>CONSELHO</button><button data-page="chronicle"><span class="navico">▤</span>CRÔNICAS</button></nav>
+</section>
+<div id="overlay"><div class="modal" id="modal"></div></div><div id="toast-container"></div>
+</div><script>
+'use strict';
+const VERSION='1.0.0', SAVE_KEY='portomonte-reconstrucao-save-v1', TOTAL_DAYS=30, SIZE=9;
+const $=id=>document.getElementById(id), clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,Math.round(v)));
+const fmt=v=>Math.floor(v), pick=a=>a[Math.floor(Math.random()*a.length)];
+const costText=c=>Object.entries(c||{}).map(([k,v])=>`${ICONS[k]||''}${v}`).join(' · ');
+const ICONS={wood:'🪵',stone:'🪨',food:'🍞',gold:'◈',hope:'✦',pop:'♟',corruption:'☠',danger:'⚔',progress:'⚒'};
+const B={
+ hall:{name:'Paço Municipal',icon:'♜',roof:'#deb46e',descr:'Centro administrativo. Abriga os conselhos da cidade.',cap:9},
+ tavern:{name:'Taberna Porto Seguro',icon:'🍺',roof:'#c67b56',descr:'Jonathan mantém viva a solidariedade entre os sobreviventes.',jobs:2,prod:'+2 moedas e +1 esperança por trabalhador/dia'},
+ temple:{name:'Templo de Deméter',icon:'✣',roof:'#c5c9ad',descr:'Abençoa a terra e contém a corrupção do Mar de Sangue.',jobs:2,prod:'-2 corrupção e +2 esperança por trabalhador/dia'},
+ farm:{name:'Horta Comunitária',icon:'🌾',roof:'#9caf70',group:'Produção',descr:'Produz 4 alimentos por trabalhador/dia.',jobs:2,cost:{wood:8,stone:3,gold:4},prod:'+4 alimento por trabalhador/dia'},
+ sawmill:{name:'Serraria',icon:'🪓',roof:'#ac8359',group:'Produção',descr:'Produz 3 madeiras por trabalhador/dia.',jobs:2,cost:{wood:10,stone:5,gold:3},prod:'+3 madeira por trabalhador/dia'},
+ quarry:{name:'Pedreira',icon:'⛏',roof:'#a3aaa5',group:'Produção',descr:'Extrai 3 pedras por trabalhador/dia.',jobs:2,cost:{wood:8,stone:6,gold:3},prod:'+3 pedra por trabalhador/dia'},
+ fishery:{name:'Pesqueiro',icon:'🐟',roof:'#649a9c',group:'Produção',descr:'Produz 3 alimentos e 1 moeda por trabalhador/dia. Só na costa.',jobs:2,cost:{wood:10,stone:7,gold:6},prod:'+3 alimento e +1 moeda por trabalhador/dia',coast:true},
+ house:{name:'Moradias',icon:'⌂',roof:'#c59672',group:'Moradia',descr:'Abriga mais cinco habitantes.',cost:{wood:12,stone:5,gold:6},cap:5},
+ market:{name:'Mercado Livre',icon:'⚖',roof:'#d0a36e',group:'Produção',descr:'Gera 4 moedas por trabalhador/dia, gastando 1 alimento.',jobs:2,cost:{wood:10,stone:10,gold:9},prod:'+4 moedas e -1 alimento por trabalhador/dia'},
+ barracks:{name:'Posto da Guarda',icon:'⚔',roof:'#b27066',group:'Defesa',descr:'Cada guarda empregado acrescenta 7 de defesa.',jobs:3,cost:{wood:12,stone:14,gold:8},prod:'+7 defesa por trabalhador'},
+ wall:{name:'Muralha',icon:'▥',roof:'#909f9d',group:'Defesa',descr:'Acrescenta 10 de defesa, sem precisar de trabalhadores.',cost:{wood:7,stone:12,gold:3},def:10},
+ clinic:{name:'Enfermaria',icon:'✚',roof:'#aac5aa',group:'Sociedade',descr:'Apoio sanitário: melhora o ânimo e reduz perdas nas incursões.',jobs:1,cost:{wood:10,stone:10,gold:9},prod:'+2 esperança/dia; protege habitantes'},
+ chapel:{name:'Capela da Aurora',icon:'☼',roof:'#ead39b',group:'Sociedade',descr:'Reduz a corrupção e fortalece a esperança.',jobs:2,cost:{wood:9,stone:13,gold:5},prod:'-2 corrupção e +2 esperança por trabalhador/dia'},
+ workshop:{name:'Oficina dos Ossos',icon:'⚒',roof:'#c68e5a',group:'Sociedade',descr:'Reconstrói a cidade aos poucos; consome madeira e pedra.',jobs:2,cost:{wood:14,stone:12,gold:9},prod:'+2 reconstrução por trabalhador/dia (custa 1 madeira e 1 pedra)'},
+ storage:{name:'Armazém',icon:'▣',roof:'#a8997b',group:'Sociedade',descr:'Aumenta em 60 a capacidade de estoque.',cost:{wood:12,stone:7,gold:5},store:60},
+ garden:{name:'Jardim Memorial',icon:'❀',roof:'#80aa73',group:'Sociedade',descr:'Homenageia os mortos, mantendo a esperança viva.',cost:{wood:5,stone:3,gold:4},hope:4},
+ orphanage:{name:'Orfanato de Teresa',icon:'♡',roof:'#d49c79',descr:'Um abrigo destruído. Teresa se recusa a abandoná-lo.',cap:5},
+ port:{name:'Docas de Portomonte',icon:'⚓',roof:'#77b5b7',descr:'Centro comercial marítimo. Sua reconstrução recupera o comércio.',jobs:2,prod:'+3 moedas e +1 alimento por trabalhador/dia'},
+};
+const GROUPS=['Todos','Produção','Moradia','Defesa','Sociedade'];
+const BUILD_IDS=['farm','sawmill','quarry','fishery','house','market','barracks','wall','clinic','chapel','workshop','storage','garden'];
+const PROJECTS=[
+ {id:'orphan',name:'Reconstruir o Orfanato de Teresa',icon:'♡',desc:'Teresa reabre as portas às crianças deslocadas. A cidade ganha abrigo e dignidade.',cost:{wood:16,stone:12,food:7,gold:8},bonus:'+13 reconstrução, +12 esperança, +5 capacidade',require:s=>true,effect:s=>{setLandmark(s,'orphanage');s.progress+=13;s.hope+=12;s.factions.povo+=11;addLog(s,'O Orfanato de Teresa foi reaberto. Sofia ajudou a pintar as portas.') }},
+ {id:'docks',name:'Reerguer as Docas',icon:'⚓',desc:'Os barqueiros retomam o trabalho. O abastecimento deixa de depender de favores.',cost:{wood:18,stone:14,gold:12},bonus:'+12 reconstrução, receitas comerciais e +2 capacidade de trabalho',effect:s=>{setLandmark(s,'port');s.progress+=12;s.factions.comercio+=9;s.danger-=4;addLog(s,'As docas foram reerguidas. Os barcos voltaram a atracar.') }},
+ {id:'water',name:'Purificar o Mar de Sangue',icon:'✣',desc:'Deméter poderá restabelecer a proteção ritual das águas ao redor de Portomonte.',cost:{wood:8,stone:10,food:6,gold:12},bonus:'-24 corrupção, incursões marítimas mais fracas, +9 reconstrução',effect:s=>{s.flags.purified=true;s.corruption-=24;s.danger-=8;s.hope+=5;s.progress+=9;s.factions.templo+=12;addLog(s,'Águas claras ressurgem junto à costa: o Templo restaurou o milagre de Deméter.')}},
+ {id:'cliffs',name:'Fortificar os Penhascos',icon:'▥',desc:'Um sistema de plataformas, estacas e muralhas protege a entrada da baía.',cost:{wood:14,stone:22,gold:10},bonus:'+19 defesa permanente, +10 reconstrução',effect:s=>{s.flags.cliffs=true;s.progress+=10;s.danger-=5;s.factions.guarda+=8;addLog(s,'Greyson concluiu a linha fortificada dos penhascos.')}},
+ {id:'expose',name:'Desmascarar o Culto',icon:'◈',desc:'Interrompa a rede da Máscara Rachada antes que ela prepare um novo ritual.',cost:{gold:13,food:5,stone:5},req:s=>s.intel>=2,reqText:'Requer 2 provas reunidas em investigações e eventos.',bonus:'-22 corrupção, -15 perigo, +10 reconstrução',effect:s=>{s.flags.exposed=true;s.corruption-=22;s.danger-=15;s.progress+=10;s.factions.povo+=8;addLog(s,'O Culto da Máscara Rachada foi desmascarado em praça pública.')}},
+ {id:'council',name:'Fundar o Conselho Popular',icon:'♜',desc:'Dar a moradores, refugiados e trabalhadores o poder de decidir o futuro da cidade.',cost:{gold:14,food:9,wood:8},req:s=>s.day>=14&&s.factions.povo>=54,reqText:'Requer dia 14 e apoio popular de pelo menos 54.',bonus:'+12 esperança, +8 reconstrução; desbloqueia final autônomo',effect:s=>{s.flags.council=true;s.hope+=12;s.corruption-=8;s.progress+=8;s.factions.povo+=13;addLog(s,'O Conselho Popular abriu suas sessões a todo habitante de Portomonte.')}},
+];
+const POLICIES=[
+ {id:'mutirao',name:'Mutirão de reconstrução',icon:'⚒',desc:'Trabalhadores organizam uma jornada coletiva para restaurar ruas e telhados.',cost:{food:5,gold:3},effect:s=>{s.progress+=7;s.hope+=4;s.factions.povo+=6;return 'O mutirão ergueu pontes, ruas e telhados.'}},
+ {id:'refuge',name:'Abrir os portões',icon:'♡',desc:'Receber deslocados da Costa Sul. Exige moradias disponíveis.',cost:{food:6,gold:3},req:s=>housing(s)>s.pop,reqText:'Não há espaço: construa moradias.',effect:s=>{let n=Math.min(3,housing(s)-s.pop);s.pop+=n;s.hope+=3;s.danger+=3;s.factions.povo+=7;return `${n} refugiados chegaram a Portomonte.`}},
+ {id:'trade',name:'Contrato com Rafael',icon:'⚖',desc:'Receba recursos rapidamente, mas faça concessões à elite mercantil.',cost:{gold:6},effect:s=>{s.wood+=13;s.stone+=9;s.factions.comercio+=10;s.factions.povo-=5;s.corruption+=7;return 'Rafael entregou materiais. Agora ele exige influência.'}},
+ {id:'tax',name:'Tributação emergencial',icon:'◈',desc:'Recolha moedas para a cidade com custo político e social.',cost:{},effect:s=>{s.gold+=15;s.hope-=8;s.factions.povo-=9;s.factions.comercio+=5;return 'Novos tributos financiaram o caixa municipal.'}},
+ {id:'patrol',name:'Patrulha de Greyson',icon:'⚔',desc:'Mobilize a guarda para conter saqueadores e vigiar os bairros.',cost:{gold:5,food:2},effect:s=>{s.danger-=13;s.corruption-=3;s.factions.guarda+=7;return 'Patrulhas retomaram as rotas perigosas.'}},
+ {id:'ritual',name:'Vigília de Deméter',icon:'✣',desc:'Uma cerimônia pública recupera a esperança e repele influências abissais.',cost:{food:3,gold:5},effect:s=>{s.corruption-=14;s.hope+=8;s.factions.templo+=8;return 'A bênção de Deméter encontrou os que estavam em desespero.'}},
+ {id:'investigate',name:'Investigar a Máscara',icon:'◈',desc:'Interrogue intermediários e rastreie os carregamentos de Rodrigo.',cost:{gold:7,food:2},req:s=>s.intel<3,reqText:'Todas as provas já foram reunidas.',effect:s=>{s.intel++;s.corruption-=4;s.factions.guarda+=4;return `Uma nova prova foi reunida (${s.intel}/2 necessárias).`}},
+ {id:'assembly',name:'Assembleia dos Bairros',icon:'♜',desc:'Ouça os moradores e distribua responsabilidades coletivas.',cost:{gold:4},effect:s=>{s.hope+=7;s.factions.povo+=9;s.factions.comercio-=3;return 'As vozes dos bairros foram ouvidas na praça.'}},
+];
+let state=null,currentPage='city',selected=null,buildMode=null,filter='Todos',offlineReady=false,animTime=0;
+function noise(x,y,n=0){let v=Math.sin((x*127.1+y*311.7+n*53.19)*12.9898)*43758.5453;return v-Math.floor(v)}
+function addLog(s,message){s.history.unshift({day:s.day,text:message});s.history=s.history.slice(0,100)}
+function baseTile(x,y){let terrain='grass';if(x===8)terrain='sea';else if(x===7)terrain='coast';else if((y<=2&&x<=2)||(y===0&&x<=4))terrain='stone';else if(y>=6&&x>=1&&x<=5)terrain='fertile';else if(y===4&&x>=1&&x<=7||x===4&&y>=2&&y<=7)terrain='road';return {terrain,kind:terrain==='sea'?'sea':'empty',id:null,workers:0,hp:100};}
+function initWorld(){let w=Array.from({length:SIZE},(_,y)=>Array.from({length:SIZE},(_,x)=>baseTile(x,y)));
+ const put=(x,y,id,kind='building')=>{let t=w[y][x];t.kind=kind;t.id=id;t.hp=kind==='ruin'?0:100;t.workers=0};
+ put(4,4,'hall');put(3,4,'tavern');put(5,2,'temple');put(3,6,'farm');put(1,3,'sawmill');put(1,1,'quarry');put(5,5,'house');put(6,5,'wall');
+ put(2,6,'orphanage','ruin');put(7,4,'port','ruin');
+ [[1,5],[2,2],[3,1],[4,6],[6,1],[5,7],[6,6],[2,7],[5,1],[1,7],[6,2],[3,3],[6,7]].forEach(([x,y])=>{w[y][x].kind='rubble'});
+ w[6][3].workers=2;w[3][1].workers=1;w[1][1].workers=1;w[4][3].workers=1;w[2][5].workers=1;
+ return w;
+}
+function freshState(difficulty='normal'){
+ let s={version:VERSION,day:1,orders:2,maxOrders:2,wood:24,stone:21,food:31,gold:22,pop:13,hope:64,corruption:24,danger:17,progress:15,world:initWorld(),factions:{povo:58,comercio:43,templo:56,guarda:49},flags:{purified:false,cliffs:false,exposed:false,council:false},history:[],completed:[],usedEvents:[],pendingEvent:null,streak:0,intel:0,difficulty,raidsWon:0,raidsLost:0,popLost:0,buildingsMade:0,rubbleCleared:0,turnsFinished:0,gameOver:false,endedReason:null,lastScore:0};
+ if(difficulty==='easy'){s.wood+=12;s.stone+=12;s.food+=15;s.gold+=12;s.hope+=10;}if(difficulty==='hard'){s.wood-=6;s.stone-=5;s.food-=8;s.gold-=7;s.hope-=7;s.danger+=8;}
+ addLog(s,'O povo voltou às ruínas de Portomonte. A reconstrução começa.');return s;
+}
+function allTiles(s=state){return s.world.flat()}
+function buildings(s=state){return allTiles(s).filter(t=>t.kind==='building')}
+function byId(id,s=state){return allTiles(s).filter(t=>t.kind==='building'&&t.id===id)}
+function housing(s=state){return buildings(s).reduce((a,t)=>a+(B[t.id].cap||0),0)}
+function workers(s=state){return buildings(s).reduce((a,t)=>a+(t.workers||0),0)}
+function idle(s=state){return Math.max(0,s.pop-workers(s))}
+function defense(s=state){return 8+(s.flags.cliffs?19:0)+(s.flags.purified?4:0)+buildings(s).reduce((a,t)=>a+(B[t.id].def||0)+(t.id==='barracks'?(t.workers||0)*7:0),0)}
+function storage(s=state){return 95+byId('storage',s).length*60}
+function pay(c,s=state){for(let [k,v] of Object.entries(c||{})){if(s[k]<v)return false;}for(let [k,v] of Object.entries(c||{})){s[k]-=v;}return true;}
+function afford(c,s=state){return Object.entries(c||{}).every(([k,v])=>s[k]>=v)}
+function normalize(s=state){let excess=Math.max(0,workers(s)-s.pop);if(excess){for(let t of buildings(s).reverse()){const removed=Math.min(excess,t.workers||0);t.workers-=removed;excess-=removed;if(excess<=0)break}}for(let k of ['wood','stone','food','gold'])s[k]=clamp(s[k],0,storage(s));for(let k of ['hope','corruption','danger','progress'])s[k]=clamp(s[k]);for(let k of Object.keys(s.factions))s.factions[k]=clamp(s.factions[k]);s.pop=Math.max(0,Math.floor(s.pop));s.orders=Math.max(0,s.orders)}
+function persist(){if(!state)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){toast('Armazenamento indisponível. Exporte seu save nas Crônicas.')}}
+function loadStored(){try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)return null;const d=JSON.parse(raw);return validSave(d)?d:null}catch(e){return null}}
+function validSave(s){return s&&Array.isArray(s.world)&&s.world.length===SIZE&&s.world.every(row=>Array.isArray(row)&&row.length===SIZE)&&Number.isInteger(s.day)&&s.day>=1&&s.day<=30&&Array.isArray(s.history)&&s.factions&&s.flags&&Array.isArray(s.completed)&&Array.isArray(s.usedEvents)}
+function applySave(s){state=s;selected=null;buildMode=null;normalize();$('menu').classList.remove('active');$('playing').classList.add('active');switchPage('city');render();if(state.pendingEvent)openEvent(state.pendingEvent);else if(state.gameOver)showFinal();}
+function startGame(diff){applySave(freshState(diff));persist();showIntro();}
+function showMenu(){state=null;$('playing').classList.remove('active');$('menu').classList.add('active');const saved=loadStored();$('continue-game').style.display=saved?'':'none';}
+function canAct(){if(state.orders<=0){toast('Sem ordens. Encerre o dia para continuar.');return false}return true}
+function completeAction(text){normalize();addLog(state,text);state.orders--;render();persist();toast(text)}
+function setLandmark(s,id){let t=allTiles(s).find(t=>t.kind==='ruin'&&t.id===id);if(t){t.kind='building';t.hp=100;t.workers=0}}
+function doBuild(id,x,y){const b=B[id],t=state.world[y]?.[x];if(!b||!t)return;if(!canAct())return;
+ if(t.kind!=='empty'){toast('Escolha um terreno vazio. Remova os escombros antes de construir.');return}
+ if(b.coast&&t.terrain!=='coast'){toast('Esse edifício precisa ficar na costa.');return}
+ if(!b.coast&&t.terrain==='coast'&&id==='quarry'){toast('Pedreiras precisam de terreno rochoso.');return}
+ if(id==='quarry'&&t.terrain!=='stone'){toast('Construa a pedreira sobre terreno rochoso.');return}
+ if(id==='farm'&&t.terrain==='stone'){toast('O solo rochoso não serve para plantio.');return}
+ if(!afford(b.cost)){toast('Recursos insuficientes.');return}
+ pay(b.cost);t.kind='building';t.id=id;t.hp=100;t.workers=0;if(b.jobs&&idle()>0)t.workers=1;
+ state.buildingsMade++;state.progress+=4;if(b.hope)state.hope+=b.hope;if(id==='house')state.hope+=2;if(id==='clinic')state.factions.povo+=2;
+ buildMode=null;selected={x,y};completeAction(`${b.name} foi construído no distrito ${x+1}-${y+1}.`);
+}
+function clearRubble(x,y){let t=state.world[y]?.[x];if(!t||t.kind!=='rubble')return;if(!canAct())return;
+ t.kind='empty';state.rubbleCleared++;state.progress+=3;state.stone+=2;state.wood+=1;state.hope+=1;
+ completeAction('Escombros removidos. Os moradores recuperaram materiais aproveitáveis.');}
+function assign(x,y,delta){const t=state.world[y]?.[x];if(!t||t.kind!=='building')return;const limit=B[t.id].jobs||0;if(!limit)return;if(delta>0&&idle()===0){toast('Não há trabalhadores livres.');return}const next=t.workers+delta;if(next<0||next>limit)return;t.workers=next;render();persist();}
+function repair(x,y){let t=state.world[y]?.[x];if(!t||t.kind!=='building'||t.hp>=100)return;if(!canAct())return;
+ const c={wood:4,stone:3,gold:2};if(!pay(c)){toast('Faltam materiais para reparo.');return}t.hp=100;state.progress+=2;completeAction(`${B[t.id].name} voltou a funcionar após os reparos.`)}
+function activateProject(id){let p=PROJECTS.find(p=>p.id===id);if(!p||state.completed.includes(id))return;if(!canAct())return;
+ if(p.req&&!p.req(state)){toast(p.reqText);return}if(!pay(p.cost)){toast('Faltam recursos para o projeto.');return}
+ p.effect(state);state.completed.push(id);completeAction(`Projeto concluído: ${p.name}.`)}
+function activatePolicy(id){let p=POLICIES.find(p=>p.id===id);if(!p)return;if(!canAct())return;if(p.req&&!p.req(state)){toast(p.reqText);return}if(!pay(p.cost)){toast('Faltam recursos para a medida.');return}
+ const msg=p.effect(state);completeAction(msg)}
+function totalOutput(s=state){let res={wood:0,stone:0,food:0,gold:0,hope:0,corruption:0,progress:0};
+ for(const t of buildings(s)){let w=t.workers||0;if(t.hp<40)continue;
+ switch(t.id){case 'farm':res.food+=4*w;break;case 'sawmill':res.wood+=3*w;break;case 'quarry':res.stone+=3*w;break;case 'fishery':res.food+=3*w;res.gold+=w;break;case 'market':res.gold+=4*w;res.food-=w;break;case 'tavern':res.gold+=2*w;res.hope+=w;break;case 'temple':res.hope+=2*w;res.corruption-=2*w;break;case 'chapel':res.hope+=2*w;res.corruption-=2*w;break;case 'clinic':res.hope+=2*w;break;case 'port':res.gold+=3*w;res.food+=w;break;case 'workshop':res.progress+=2*w;res.wood-=w;res.stone-=w;break;}
+ }return res;}
+function processDay(){if(state.gameOver)return;closeModal();let s=state,out=totalOutput(s);
+ // Offices are suspended if resources cannot cover their material consumption.
+ if(out.wood<0&&s.wood+out.wood<0||out.stone<0&&s.stone+out.stone<0){out.progress=0;out.wood=Math.max(0,out.wood);out.stone=Math.max(0,out.stone);}
+ for(let [k,v] of Object.entries(out))s[k]+=v;
+ let consume=Math.ceil(s.pop/3);s.food-=consume;
+ if(s.food<0){let shortage=Math.abs(s.food);s.food=0;const loss=Math.min(s.pop-1,Math.max(1,Math.ceil(shortage/3)));s.pop-=loss;s.popLost+=loss;s.hope-=8+loss*3;s.danger+=4;addLog(s,`Fome nos bairros: ${loss} moradores deixaram a cidade.`);}
+ else if(s.day%3===0&&housing(s)>s.pop&&s.food>=10&&s.hope>=48){s.pop++;s.hope+=1;addLog(s,'Uma família retornou à cidade após ouvir notícias de sua recuperação.');}
+ s.corruption+=2+(s.day>=15?1:0)-(s.flags.purified?2:0);
+ s.danger+=2+(s.corruption>55?2:0)-(s.flags.exposed?2:0);
+ if(s.food>=20&&s.pop>=10)s.hope+=1;
+ if(s.hope<25)s.danger+=2;
+ if(s.corruption>=85){s.hope-=4;s.danger+=3;}
+ if(s.day%5===0)resolveRaid();
+ if(s.day%7===0){let decays=Math.max(0,Math.floor(s.danger/30));s.hope-=decays;}
+ normalize(s);
+ s.turnsFinished++;
+ if(s.pop<=1||s.hope<=0||s.danger>=100){s.streak++;}else s.streak=0;
+ if(s.streak>=2){s.gameOver=true;s.endedReason='collapse';addLog(s,'Portomonte foi tomada pela ruína antes de completar sua reconstrução.');persist();render();showFinal();return;}
+ if(s.day>=TOTAL_DAYS){s.gameOver=true;s.endedReason='completed';addLog(s,'O trigésimo dia chegou ao fim. A cidade deverá responder por suas escolhas.');persist();render();showFinal();return;}
+ s.day++;s.orders=s.maxOrders;addLog(s,`Começa o dia ${s.day}. Trabalhadores disponíveis: ${idle(s)}.`);
+ normalize(s);persist();selected=null;buildMode=null;switchPage('city');render();
+ const e=eventForDay(s.day);if(e){s.pendingEvent=e;persist();openEvent(e)}if(window._lastRaid?.day===s.day-1)toast(window._lastRaid.text);else if(!e)toast(`Dia ${s.day}. A cidade segue viva.`);
+}
+function resolveRaid(){let s=state,final=s.day===30;
+ let assault=Math.round(18+s.day*1.35+s.danger*.22+s.corruption*.16+(s.difficulty==='hard'?10:s.difficulty==='easy'?-8:0)+(final?17:0)-(s.flags.purified?6:0)-(s.flags.exposed?7:0));
+ let guard=defense(s), margin=guard-assault;
+ if(margin>=0){s.raidsWon++;s.danger-=7;s.hope+=4;s.factions.guarda+=4;addLog(s,`Incursão repelida! Defesa ${guard} contra força inimiga ${assault}.`);setRaidFlash(`⚔ Incursão repelida! ${guard} × ${assault}`,false);}
+ else {s.raidsLost++;const damage=-margin;const lost=Math.min(Math.max(0,s.pop-1),Math.max(1,Math.floor(damage/13)));let mitigated=Math.min(lost,Math.floor(byId('clinic',s).length/2));const actual=Math.max(0,lost-mitigated);
+ s.pop-=actual;s.popLost+=actual;s.hope-=Math.min(23,Math.ceil(damage*.42));s.food-=Math.min(10,Math.ceil(damage/6));s.danger+=Math.min(14,Math.ceil(damage/6));s.progress-=Math.min(7,Math.floor(damage/10));
+ let targets=buildings(s).filter(t=>t.id!=='hall'&&t.id!=='temple');if(targets.length&&damage>=8){let target=pick(targets);target.hp=clamp(target.hp-Math.ceil(damage*.7),5,100);}
+ addLog(s,`Ataque à cidade! ${actual} habitante(s) perdido(s). Defesa ${guard} contra força ${assault}.`);setRaidFlash(`⚔ A cidade foi atacada! ${guard} × ${assault}`,true);}
+}
+function setRaidFlash(t,bad){window._lastRaid={day:state.day,text:t,bad};}
+const STORY=[
+ {id:'arrival',day:2,icon:'🕯',title:'O primeiro conselho',text:'Jonathan abriu a Taberna Porto Seguro aos sobreviventes. Sofia pergunta se Portomonte voltará a ser um lar — ou apenas um porto dos ricos.',choices:[
+  {label:'Dar voz aos moradores',detail:'+9 apoio popular · +5 esperança · -4 apoio mercantil',apply:s=>{s.factions.povo+=9;s.hope+=5;s.factions.comercio-=4}},
+  {label:'Nomear os mercadores',detail:'+12 moedas · +9 apoio mercantil · -6 apoio popular',apply:s=>{s.gold+=12;s.factions.comercio+=9;s.factions.povo-=6}},
+  {label:'Pedir mediação ao templo',detail:'-5 corrupção · +9 apoio religioso',apply:s=>{s.corruption-=5;s.factions.templo+=9}}]},
+ {id:'shelter',day:5,icon:'♡',title:'A súplica de Teresa',text:'O teto do Orfanato ameaça cair. Teresa acolhe crianças em quartos improvisados e pede ajuda antes que a estação das chuvas chegue.',choices:[
+  {label:'Doar comida e madeira',detail:'Custa 6 alimentos e 5 madeiras · +12 esperança · +9 povo',cost:{food:6,wood:5},apply:s=>{s.hope+=12;s.factions.povo+=9;s.progress+=3}},
+  {label:'Encaminhá-las ao templo',detail:'Custa 5 moedas · +5 esperança · +7 templo',cost:{gold:5},apply:s=>{s.hope+=5;s.factions.templo+=7}},
+  {label:'Esperar por recursos',detail:'-7 esperança · -8 povo',apply:s=>{s.hope-=7;s.factions.povo-=8}}]},
+ {id:'rafael',day:8,icon:'⚖',title:'A oferta de Rafael',text:'Rafael, o comerciante mais influente da costa, se dispõe a financiar obras. Em troca, quer controlar os preços e os armazéns por uma geração.',choices:[
+  {label:'Assinar a concessão',detail:'+18 moedas · +12 pedra · +12 comércio · +14 corrupção',apply:s=>{s.gold+=18;s.stone+=12;s.factions.comercio+=12;s.corruption+=14}},
+  {label:'Recusar com publicidade',detail:'+10 povo · +5 esperança · -7 comércio',apply:s=>{s.factions.povo+=10;s.hope+=5;s.factions.comercio-=7}},
+  {label:'Exigir contrato público',detail:'Custa 5 moedas · +6 povo · +4 comércio · -4 corrupção',cost:{gold:5},apply:s=>{s.factions.povo+=6;s.factions.comercio+=4;s.corruption-=4}}]},
+ {id:'caravans',day:11,icon:'🐚',title:'Caravanas do Além Sul',text:'Orcs e humanos fugindo das guerras da caatinga chegam aos portões. Trazem ferramentas e mãos habilidosas, mas precisam de comida e abrigo.',choices:[
+  {label:'Acolher os refugiados',detail:'Custa 6 alimentos · até +3 população (se houver moradia) · +8 povo',cost:{food:6},apply:s=>{s.pop+=Math.min(3,Math.max(0,housing(s)-s.pop));s.factions.povo+=8;s.hope+=4}},
+  {label:'Trocar recursos, sem abrigo',detail:'+8 madeiras · +6 pedras · +3 perigo',apply:s=>{s.wood+=8;s.stone+=6;s.danger+=3}},
+  {label:'Fechar os portões',detail:'-7 esperança · +4 guarda',apply:s=>{s.hope-=7;s.factions.guarda+=4}}]},
+ {id:'greyson',day:14,icon:'⚔',title:'Relatório de Greyson',text:'Capitão Greyson descobriu que homens de Rodrigo estão descarregando armas e caixas seladas à noite. Precisa de autorização para investigar.',choices:[
+  {label:'Investigar os armazéns',detail:'Custa 7 moedas · +1 prova · -8 corrupção',cost:{gold:7},apply:s=>{s.intel++;s.corruption-=8;s.factions.guarda+=8}},
+  {label:'Prender os suspeitos sem provas',detail:'-10 perigo · -8 povo · +6 guarda',apply:s=>{s.danger-=10;s.factions.povo-=8;s.factions.guarda+=6}},
+  {label:'Não provocar Rodrigo',detail:'+9 perigo · +6 corrupção',apply:s=>{s.danger+=9;s.corruption+=6}}]},
+ {id:'masked',day:17,icon:'☠',title:'Os rostos da Máscara Rachada',text:'Sofia encontra símbolos do culto nas paredes, ocultos sob inscrições comerciais. A rede conspiratória está novamente organizada.',choices:[
+  {label:'Ouvir Sofia e reunir provas',detail:'+1 prova · -6 corrupção · +5 povo',apply:s=>{s.intel++;s.corruption-=6;s.factions.povo+=5}},
+  {label:'Organizar vigilância voluntária',detail:'Custa 5 alimentos · -12 perigo · +6 povo',cost:{food:5},apply:s=>{s.danger-=12;s.factions.povo+=6}},
+  {label:'Silenciar o boato',detail:'+8 corrupção · -5 esperança',apply:s=>{s.corruption+=8;s.hope-=5}}]},
+ {id:'alaric',day:20,icon:'♜',title:'Lorde Alaric retorna',text:'Alaric afirma que apenas uma autoridade incontestável salvará Portomonte. Seus homens oferecem segurança em troca de poderes extraordinários.',choices:[
+  {label:'Rejeitar o mando aristocrático',detail:'+9 povo · +5 esperança · +6 perigo',apply:s=>{s.factions.povo+=9;s.hope+=5;s.danger+=6}},
+  {label:'Conceder poderes de exceção',detail:'-12 perigo · +14 guarda · +12 corrupção · -12 povo',apply:s=>{s.danger-=12;s.factions.guarda+=14;s.corruption+=12;s.factions.povo-=12;s.flags.alaric=true}},
+  {label:'Submeter a proposta ao conselho',detail:'Custa 6 moedas · +7 povo · +6 guarda',cost:{gold:6},apply:s=>{s.factions.povo+=7;s.factions.guarda+=6}}]},
+ {id:'daegon',day:23,icon:'🌊',title:'O chamado das profundezas',text:'Sinais de Daegon surgem na água. Pescadores veem kuo-toa reunindo-se nas enseadas e os abissais respondendo aos cânticos.',choices:[
+  {label:'Confiar no Templo de Deméter',detail:'Custa 6 moedas e 5 alimentos · -12 corrupção · +10 templo',cost:{gold:6,food:5},apply:s=>{s.corruption-=12;s.factions.templo+=10;s.hope+=4}},
+  {label:'Reforçar guardas e paliçadas',detail:'Custa 8 madeiras · -12 perigo · +8 guarda',cost:{wood:8},apply:s=>{s.danger-=12;s.factions.guarda+=8}},
+  {label:'Desprezar os relatos',detail:'+10 perigo · +8 corrupção',apply:s=>{s.danger+=10;s.corruption+=8}}]},
+ {id:'last',day:28,icon:'✦',title:'Vésperas de um novo pacto',text:'Os trinta dias se aproximam do fim. Os habitantes perguntam quem governará os frutos do trabalho coletivo — e quem pagará pela última defesa.',choices:[
+  {label:'Mobilizar o povo nas ruas',detail:'+10 esperança · +10 povo · -6 perigo',apply:s=>{s.hope+=10;s.factions.povo+=10;s.danger-=6}},
+  {label:'Convocar comerciantes e capitães',detail:'+16 moedas · +8 comércio · +6 guarda · -5 povo',apply:s=>{s.gold+=16;s.factions.comercio+=8;s.factions.guarda+=6;s.factions.povo-=5}},
+  {label:'Oferecer preces pela cidade',detail:'-10 corrupção · +8 templo · +4 esperança',apply:s=>{s.corruption-=10;s.factions.templo+=8;s.hope+=4}}]},
+];
+const SIDE_EVENTS=[
+ {id:'fishers',icon:'🐟',title:'Pescadores do mar doente',text:'Uma rede repleta de peixes mortos chega à praia. Os pescadores pedem descanso ou equipamentos novos.',choices:[
+  {label:'Ajudar os pescadores',detail:'Custa 4 madeiras · +8 alimentos · +4 esperança',cost:{wood:4},apply:s=>{s.food+=8;s.hope+=4}},
+  {label:'Isolar a praia',detail:'-6 perigo · -3 comércio',apply:s=>{s.danger-=6;s.factions.comercio-=3}}]},
+ {id:'fire',icon:'🔥',title:'Incêndio nos bairros baixos',text:'Uma lamparina derrubada inicia um incêndio na borda do assentamento. Os moradores formam uma fila de baldes.',choices:[
+  {label:'Pagar materiais de socorro',detail:'Custa 5 pedras e 5 madeiras · +6 reconstrução',cost:{stone:5,wood:5},apply:s=>{s.progress+=6;s.hope+=3}},
+  {label:'Deixar que o fogo siga',detail:'-6 reconstrução · -8 esperança',apply:s=>{s.progress-=6;s.hope-=8}}]},
+ {id:'boat',icon:'⛵',title:'Velas no horizonte',text:'Uma embarcação desconhecida oferece sal e mantimentos. O capitão prefere negociar sem perguntas.',choices:[
+  {label:'Fazer negócio',detail:'Custa 6 moedas · +12 alimentos · +5 perigo',cost:{gold:6},apply:s=>{s.food+=12;s.danger+=5}},
+  {label:'Inspecionar a carga',detail:'+1 prova · +3 guarda · -3 comércio',apply:s=>{s.intel++;s.factions.guarda+=3;s.factions.comercio-=3}}]},
+ {id:'bones',icon:'🦴',title:'Ossos que contam histórias',text:'Pedreiros encontram fósseis de Golzdov sob a praça. Algumas inscrições parecem reagir ao contato humano.',choices:[
+  {label:'Documentar o achado',detail:'Custa 4 moedas · +5 esperança · -3 corrupção',cost:{gold:4},apply:s=>{s.hope+=5;s.corruption-=3}},
+  {label:'Transformar ossos em material',detail:'+9 pedras · +7 corrupção',apply:s=>{s.stone+=9;s.corruption+=7}}]},
+ {id:'grain',icon:'🌾',title:'A colheita repartida',text:'Deméter favoreceu as hortas. Alguns vizinhos querem guardar os grãos, outros repartem com quem nada possui.',choices:[
+  {label:'Distribuir a colheita',detail:'+8 alimento · +5 esperança · +5 povo',apply:s=>{s.food+=8;s.hope+=5;s.factions.povo+=5}},
+  {label:'Leiloar a colheita',detail:'+11 moedas · +4 comércio · -4 povo',apply:s=>{s.gold+=11;s.factions.comercio+=4;s.factions.povo-=4}}]},
+ {id:'whispers',icon:'🕯',title:'Vozes na viela',text:'Há rumores de reuniões clandestinas. Alguns defendem uma busca casa a casa, outros exigem investigação sem violência.',choices:[
+  {label:'Organizar comitê de investigação',detail:'Custa 4 moedas · -6 corrupção · +4 povo',cost:{gold:4},apply:s=>{s.corruption-=6;s.factions.povo+=4}},
+  {label:'Autorizar batidas policiais',detail:'-9 perigo · -7 povo · +6 guarda',apply:s=>{s.danger-=9;s.factions.povo-=7;s.factions.guarda+=6}}]},
+ {id:'tortles',icon:'🐢',title:'Monges das ilhas',text:'Monges tortles e tabaxis chegam de um arquipélago distante oferecendo conhecimento náutico.',choices:[
+  {label:'Abrigar os viajantes',detail:'Custa 5 alimentos · -8 perigo · +6 esperança',cost:{food:5},apply:s=>{s.danger-=8;s.hope+=6}},
+  {label:'Comprar mapas de navegação',detail:'Custa 5 moedas · +8 moedas futuras (imediatas) · +5 comércio',cost:{gold:5},apply:s=>{s.gold+=13;s.factions.comercio+=5}}]},
+ {id:'miners',icon:'⛏',title:'Caravana de Thargrid',text:'Anões de Thargrid vendem pedra e oferecem solidariedade à resistência do litoral.',choices:[
+  {label:'Adquirir pedras',detail:'Custa 7 moedas · +14 pedras',cost:{gold:7},apply:s=>{s.stone+=14}},
+  {label:'Organizar troca solidária',detail:'Custa 5 alimentos · +8 pedras · +5 esperança',cost:{food:5},apply:s=>{s.stone+=8;s.hope+=5}}]},
+];
+function eventForDay(day){let fixed=STORY.find(x=>x.day===day);if(fixed)return fixed.id;
+ if(day%3===1||day===3||day===7||day===10||day===13||day===16||day===19||day===22||day===25){let pool=SIDE_EVENTS.filter(e=>!state.usedEvents.includes(e.id));if(pool.length)return pick(pool).id}return null;}
+function getEvent(id){return [...STORY,...SIDE_EVENTS].find(e=>e.id===id)}
+function openEvent(id){const e=getEvent(id);if(!e)return;const choices=e.choices.map((c,i)=>`<button class="choice" data-event-choice="${i}" ${!afford(c.cost)?'disabled':''}><b>${c.label}</b><small>${c.detail}${!afford(c.cost)?' · RECURSOS INSUFICIENTES':''}</small></button>`).join('');
+ openModal(`<div class="emblem">${e.icon}</div><div class="episode">Crônica · Dia ${state.day}</div><h2>${e.title}</h2><p>${e.text}</p><div>${choices}</div>`);
+}
+function chooseEvent(i){const e=getEvent(state.pendingEvent);const c=e?.choices[i];if(!c||!afford(c.cost))return;pay(c.cost);c.apply(state);state.usedEvents.push(e.id);state.pendingEvent=null;addLog(state,`${e.title}: ${c.label}.`);normalize();persist();closeModal();render();toast(`Decisão registrada: ${c.label}.`)}
+function render(){if(!state)return;normalize();
+ $('act-label').textContent=state.day<=10?'ATO I · AS CINZAS':state.day<=20?'ATO II · AS MÁSCARAS':'ATO III · O PREÇO DA LIBERDADE';
+ $('day-label').textContent=`DIA ${String(state.day).padStart(2,'0')} / 30`;
+ const res=[['wood','MADEIRA'],['stone','PEDRA'],['food','ALIMENTO'],['gold','MOEDAS'],['pop','PESSOAS']];
+ $('resources').innerHTML=res.map(([k,label])=>`<div class="res ${(k==='food'&&state.food<Math.ceil(state.pop/3)*2||k==='pop'&&state.pop<=5)?'low':''}"><span>${ICONS[k]}</span>${state[k]}<small>${label}</small></div>`).join('');
+ $('metrics').innerHTML=[['progress','OBRAS',''],['hope','ÂNIMO','hope'],['danger','AMEAÇA','risk']].map(([k,n,cls])=>`<div class="metric ${cls}"><div class="v">${n}<em>${state[k]}%</em></div><div class="meter"><i style="width:${state[k]}%"></i></div></div>`).join('');
+ $('order-count').textContent=state.orders;$('end-turn').disabled=state.gameOver;$('end-turn').textContent=state.day===30?'✦ CONCLUIR CAMPANHA':'☾ ENCERRAR DIA';
+ renderCity();renderBuild();renderCouncil();renderChronicle();
+}
+function renderCity(){let detail=$('tile-detail');if(buildMode){detail.innerHTML=`<div class="card"><div class="row between"><h3>⚒ Posicionar ${B[buildMode].name}</h3><button class="btn small secondary" data-task="cancel-building">CANCELAR</button></div><p>Toque em um terreno livre destacado em verde para construir. Locais vermelhos são inadequados.</p></div>`;}else if(!selected){detail.innerHTML=`<div class="card"><div class="row between"><h3>⚜ A reconstrução começa aqui</h3><span class="tag gold">${state.progress}%</span></div><p>Toque em ruínas para remover os escombros ou em edifícios para distribuir trabalhadores. Em <b>Construir</b>, escolha o próximo projeto.</p><div class="row between"><span class="tiny">⚒ Defesa atual: <b class="accent">${defense(state)}</b></span><span class="tiny">♟ Mãos disponíveis: <b class="accent">${idle(state)}</b></span></div>${window._lastRaid?.day===state.day-1?`<p class="${window._lastRaid.bad?'bad':'good'}">${window._lastRaid.text}</p>`:''}</div>`;}
+ else{let {x,y}=selected,t=state.world[y]?.[x];if(!t){selected=null;return renderCity()}
+ let body='';let coords=`SETOR ${x+1} · ${y+1}`;
+ if(t.kind==='rubble')body=`<div class="card rubble"><div class="row between"><h3>🧱 Ruínas e escombros</h3><span class="tag gold">${coords}</span></div><p>Casas destruídas durante o ataque do culto. Desobstrua o terreno para reconstruir o bairro e reaproveitar materiais.</p><div class="row between"><span class="tiny good">+3 obras · +2 pedras · +1 madeira</span><button class="btn small" data-task="clear" ${state.orders<=0?'disabled':''}>LIMPAR · 1 ORDEM</button></div></div>`;
+ else if(t.kind==='ruin'){const orphan=t.id==='orphanage',p=PROJECTS.find(p=>p.id===(orphan?'orphan':'docks'));
+ body=`<div class="card rubble"><div class="row between"><h3>${B[t.id].icon} ${B[t.id].name}</h3><span class="tag red">DESTRUÍDO</span></div><p>${B[t.id].descr} Sua recuperação requer um projeto especial no Conselho.</p><button class="btn small secondary" data-task="council">ABRIR PROJETOS</button></div>`;}
+ else if(t.kind==='building'){const b=B[t.id],max=b.jobs||0;let wrows=max?`<div class="row between" style="margin:9px 0"><span class="tiny">TRABALHADORES: <b class="accent">${t.workers}/${max}</b> · Livres: ${idle()}</span><div class="row"><button class="btn small secondary" data-task="assign-minus" ${t.workers===0?'disabled':''}>−</button><button class="btn small secondary" data-task="assign-plus" ${(idle()<=0||t.workers>=max)?'disabled':''}>+</button></div></div>`:'';
+ body=`<div class="card"><div class="row between"><h3>${b.icon} ${b.name}</h3><span class="tag">${coords}</span></div><p>${b.descr}</p>${b.prod?`<div class="tiny good">${b.prod}</div>`:''}${wrows}<div class="row between"><span class="tiny">Integridade: ${t.hp}%${b.def?' · Defesa: +'+b.def:''}${b.cap?' · Abrigos: +'+b.cap:''}</span>${t.hp<100?`<button class="btn small" data-task="repair" ${state.orders<=0?'disabled':''}>REPARAR 4🪵 3🪨 2◈</button>`:''}</div></div>`;}
+ else if(t.kind==='sea')body=`<div class="card"><h3>🌊 Mar de Sangue</h3><p>As águas amaldiçoadas encobrem ruínas. A bênção de Deméter é o que mantém a costa habitável.</p></div>`;
+ else{let terrainName={coast:'Margem costeira',stone:'Terreno rochoso',fertile:'Solo fértil',grass:'Terreno livre',road:'Antiga via urbana'};
+ body=`<div class="card"><div class="row between"><h3>◇ ${terrainName[t.terrain]||'Terreno livre'}</h3><span class="tag">${coords}</span></div><p>${t.terrain==='coast'?'Adequado para pesqueiros e outras estruturas.':t.terrain==='stone'?'Adequado para pedreiras, muralhas e edifícios.':'Terreno disponível para uma nova construção.'}</p><button class="btn small secondary" data-task="build">ESCOLHER CONSTRUÇÃO</button></div>`;}
+ detail.innerHTML=body;
+ }
+ $('map-hint').textContent=buildMode?`Posicione: ${B[buildMode].name}`:'Toque para inspecionar';$('map-ribbon').textContent=buildMode?`⚒ POSICIONE: ${B[buildMode].name}`:'PORTOMONTE · COSTA SUL';$('map-ribbon').classList.toggle('build',!!buildMode);paintMap();}
+function renderBuild(){let filters=$('build-filters');filters.innerHTML=GROUPS.map(g=>`<button data-filter="${g}" class="${filter===g?'active':''}">${g}</button>`).join('');
+ $('workers-label').textContent=`♟ ${idle()} trabalhadores livres / ${state.pop} habitantes`;$('build-cap').textContent=`Armazém: ${storage(state)}`;
+ $('build-list').innerHTML=BUILD_IDS.filter(id=>filter==='Todos'||B[id].group===filter).map(id=>{let b=B[id],disabled=!afford(b.cost)||state.orders<1;
+ return `<div class="card build-card"><div><div class="row between"><div class="name">${b.name}</div><div class="emoji">${b.icon}</div></div><div class="desc">${b.descr}</div></div><div><div class="cost">${costText(b.cost)}</div><button class="btn small ${disabled?'secondary':''}" data-bld="${id}" ${disabled?'disabled':''}>${disabled?'FALTAM RECURSOS':'POSICIONAR NO MAPA'}</button></div></div>`}).join('');}
+function renderCouncil(){const s=state;let f=`<div class="section-label">OS QUATRO PODERES</div><div class="factions">`;
+ const names=[['povo','♟ Moradores','Cooperação e legitimidade'],['comercio','⚖ Mercadores','Mercadorias e influência'],['templo','✣ Templo','Ritos e proteção'],['guarda','⚔ Guarda','Segurança e disciplina']];
+ for(let [id,name,desc] of names){f+=`<div class="faction"><div class="row between"><h4>${name}</h4><b style="font:700 12px system-ui;color:var(--gold)">${s.factions[id]}</b></div><div class="meter"><i style="width:${s.factions[id]}%"></i></div><p>${desc}</p></div>`}f+='</div>';
+ f+=`<div class="section-label">GRANDES OBRAS · UMA ORDEM CADA</div>`;
+ for(const p of PROJECTS){let done=s.completed.includes(p.id),locked=p.req&&!p.req(s),missing=!afford(p.cost);
+ f+=`<div class="card project"><div class="row between"><h3>${p.icon} ${p.name}</h3><span class="tag ${done?'':'gold'}">${done?'CONCLUÍDO':'PROJETO'}</span></div><p>${p.desc}</p><div class="award">${p.bonus}</div>${!done?`<div class="row between" style="margin-top:9px;align-items:flex-end"><div class="tiny">${costText(p.cost)}${locked?`<div class="bad" style="margin-top:4px">${p.reqText}</div>`:''}</div><button class="btn small" data-project="${p.id}" ${locked||missing||s.orders<=0?'disabled':''}>EXECUTAR</button></div>`:''}</div>`;}
+ f+=`<div class="section-label">DELIBERAÇÕES · UMA ORDEM CADA</div>`;
+ for(const p of POLICIES){let disabled=!afford(p.cost)||s.orders<=0||(p.req&&!p.req(s));
+ f+=`<div class="card"><div class="row between"><h3>${p.icon} ${p.name}</h3><button class="btn small secondary" data-policy="${p.id}" ${disabled?'disabled':''}>ADOTAR</button></div><p>${p.desc}</p><div class="tiny">${costText(p.cost)||'Sem custo material'}${p.req&&!p.req(s)?`<span class="bad"> · ${p.reqText}</span>`:''}</div></div>`}
+ $('council-list').innerHTML=f;
+}
+function renderChronicle(){const s=state;let html=`<div class="card"><h3>◈ Estado de Portomonte</h3><div class="statline"><span>Tempo transcorrido</span><b>${s.turnsFinished}/30 dias</b></div><div class="statline"><span>Reconstrução</span><b>${s.progress}%</b></div><div class="statline"><span>Corrupção abissal</span><b>${s.corruption}%</b></div><div class="statline"><span>Defesa / Ameaça</span><b>${defense(s)} / ${s.danger}%</b></div><div class="statline"><span>Habitantes / Capacidade</span><b>${s.pop} / ${housing(s)}</b></div><div class="statline"><span>Trabalhadores disponíveis</span><b>${idle(s)}</b></div><div class="statline"><span>Provas sobre o culto</span><b>${s.intel}</b></div><div class="statline"><span>Incursões repelidas / sofridas</span><b>${s.raidsWon} / ${s.raidsLost}</b></div><div class="statline"><span>Edifícios erguidos / entulhos removidos</span><b>${s.buildingsMade} / ${s.rubbleCleared}</b></div></div>`;
+ html+=`<div class="section-label">REGISTROS RECENTES</div><div class="card">${s.history.slice(0,22).map(h=>`<div class="logentry"><span class="day">DIA ${String(h.day).padStart(2,'0')}</span><p>${h.text.replace(/</g,'&lt;')}</p></div>`).join('')}</div>`;
+ html+=`<div class="section-label">SALVAMENTO E JOGO OFFLINE</div><div class="card"><h3>◈ Sua história permanece aqui</h3><p>O jogo salva automaticamente neste dispositivo. Para guardar uma cópia, use Exportar. A importação restaura também o mapa, construções e decisões.</p><div class="action-row"><button class="btn small" data-task="export">EXPORTAR SAVE</button><button class="btn small secondary" data-task="import">IMPORTAR SAVE</button><button class="btn small ghost" data-task="guide">COMO JOGAR</button></div><div class="divider"></div><div class="tiny">Versão ${VERSION} · ${offlineReady?'✓ Cache offline instalado':'◌ Verifique a instalação offline no navegador'}<br/>O GitHub Pages serve apenas para instalar e atualizar este aplicativo. Suas partidas são armazenadas no navegador.</div><div class="action-row"><button class="btn small ghost" data-task="menu">MENU INICIAL</button><button class="btn small danger" data-task="restart">REINICIAR CAMPANHA</button></div></div>`;
+ $('chronicle-list').innerHTML=html;
+}
+function switchPage(page){currentPage=page;for(let b of document.querySelectorAll('#tabs button'))b.classList.toggle('active',b.dataset.page===page);for(let el of document.querySelectorAll('.page'))el.classList.toggle('active',el.id==='view-'+page);$('content').scrollTop=0;if(page==='city')requestAnimationFrame(paintMap);}
+function openModal(content){$('modal').innerHTML=content;$('overlay').classList.add('show')}
+function closeModal(){$('overlay').classList.remove('show');$('modal').innerHTML=''}
+function toast(msg){let c=$('toast-container');c.innerHTML=`<div class="toast">${String(msg).replace(/</g,'&lt;')}</div>`;clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>c.innerHTML='',2900)}
+function showGuide(){openModal(`<div class="emblem">⚒</div><div class="episode">Manual do Reconstrutor</div><h2>Como jogar</h2><p><b>Objetivo:</b> sobreviver aos 30 dias e deixar Portomonte reconstruída. Você pode vencer com diferentes governos e destinos.</p><p><b>Todos os dias:</b> você recebe <b>2 ordens</b>. Use-as para construir, limpar entulhos, concluir grandes projetos ou aprovar políticas no Conselho. Quando estiver pronto, encerre o dia.</p><p><b>Mapa:</b> toque em uma ruína para limpar, em uma casa para verificar o abrigo ou em um edifício produtivo para atribuir trabalhadores (+ / −). Atribuir trabalhadores não gasta ordens.</p><p><b>Produção:</b> trabalhadores produzem comida, madeira, pedra e moedas ao fim de cada dia. Todos os habitantes consomem alimentos. Sem moradias livres, a população não cresce.</p><p><b>Defesa:</b> incursões chegam nos dias 5, 10, 15, 20, 25 e 30. A força inimiga aumenta com o perigo e a corrupção. Construa muralhas ou empregue guardas para resistir.</p><p><b>Política:</b> decisões sobre refugiados, comércio, religião e justiça alteram o apoio das facções. O Conselho Popular depende de legitimidade entre os moradores.</p><p><b>Vitória:</b> busque pelo menos 65% de reconstrução, 8 habitantes e controle a ameaça. Uma Portomonte verdadeiramente livre exige mais que levantar seus prédios.</p><button class="btn" data-task="close">ENTENDI</button>`);}
+function showIntro(){openModal(`<div class="emblem">⚜</div><div class="episode">Prólogo · O primeiro amanhecer</div><h2>A cidade não morreu</h2><p>O Culto da Máscara Rachada incendiou Portomonte. Entre penhascos e águas de sangue, sobrevivem a Taberna Porto Seguro, o Templo de Deméter e algumas hortas.</p><p>Teresa abriga crianças sob um teto arruinado. Jonathan alimenta os sobreviventes. Rafael pretende controlar as obras; Rodrigo movimenta cargas clandestinas; Greyson teme novos ataques.</p><p><b>Você recebeu trinta dias para reconstruir Portomonte.</b> Seus decretos, construções e alianças decidirão a quem pertencerá a cidade.</p><div class="card"><div class="tiny">DICA INICIAL</div><p>Limpe uma ruína e construa uma segunda horta ou um posto de guarda. Distribua trabalhadores entre edifícios tocando no mapa.</p></div><button class="btn" data-task="close">COMEÇAR A RECONSTRUÇÃO</button>`);}
+function chooseDifficulty(){openModal(`<div class="emblem">⚜</div><div class="episode">Uma nova campanha</div><h2>O destino de Portomonte</h2><p>Escolha o grau de dificuldade. Todos os modos contam a mesma história, mas as reservas iniciais e a ferocidade dos ataques mudam.</p><button class="choice" data-new-diff="easy"><b>✦ Aprendiz</b><small>Mais recursos, maior esperança e ataques mais brandos. Bom para conhecer a cidade.</small></button><button class="choice" data-new-diff="normal"><b>⚔ Reconstrutor</b><small>Desafio equilibrado. A cidade exige planejamento e concessões.</small></button><button class="choice" data-new-diff="hard"><b>☠ Sobrevivente</b><small>Menos recursos, cidade mais tensa, incursões ferozes.</small></button><button class="btn secondary" data-task="close">VOLTAR</button>`);}
+function showFinal(){if(!state)return;let s=state,valid=s.endedReason==='completed'&&s.progress>=65&&s.pop>=8&&s.danger<90&&s.hope>=20;
+ let title,subtitle,text,icon;
+ if(s.endedReason==='collapse'){title='Uma cidade esquecida';subtitle='DERROTA · O COLAPSO';icon='☠';text='A fome, o terror ou a desesperança fizeram mais que destruir casas: dispersaram as pessoas que as sustentavam. Portomonte retorna ao silêncio.';}
+ else if(!valid){title='As ruínas resistem';subtitle='FINAL AMARGO · SOBREVIVÊNCIA';icon='🕯';text='Portomonte resistiu aos trinta dias, mas a reconstrução foi insuficiente. Algumas famílias permanecem entre as ruínas, e o futuro ainda pode lhes escapar.';}
+ else if(s.flags.council&&s.factions.povo>=65&&s.corruption<50){title='Portomonte livre';subtitle='FINAL DA ASSEMBLEIA';icon='✦';text='Os habitantes transformaram reconstrução em autogoverno. A cidade não se curvou à Corte, ao culto nem ao capital de Rafael. A liberdade segue vulnerável, mas agora pertence a quem a construiu.';}
+ else if(s.flags.alaric||s.factions.guarda>=80&&s.factions.povo<50){title='A cidade sob vigília';subtitle='FINAL DA FORTALEZA';icon='⚔';text='As muralhas se ergueram e os ataques foram repelidos. Mas o preço foi alto: a segurança justifica poderes que poucos conseguem contestar.';}
+ else if(s.factions.comercio>=70&&s.factions.povo<65){title='A república dos mercadores';subtitle='FINAL DO OURO';icon='⚖';text='O porto floresce sob contratos, licenças e concessões. Há pão e trabalho, mas os moradores começam a se perguntar a quem pertencem os frutos de seu esforço.';}
+ else if(s.factions.templo>=80&&s.flags.purified){title='O santuário das águas claras';subtitle='FINAL DO TEMPLO';icon='✣';text='Deméter voltou a clarear as águas. Os ritos unem Portomonte, mas a autoridade religiosa começa a arbitrar decisões que antes pertenciam à praça.';}
+ else{title='Um porto entre tempestades';subtitle='FINAL DA RECONSTRUÇÃO';icon='⚜';text='Portomonte renasceu do fogo e retomou seu comércio. A cidade ainda enfrenta disputas entre povo, templo, guarda e mercadores — mas permaneceu de pé.';}
+ let score=Math.max(0,Math.round(s.progress*7+s.pop*9+s.hope*2+(100-s.corruption)*2+s.raidsWon*35+s.completed.length*25-s.popLost*20-(s.endedReason==='collapse'?300:0)));
+ s.lastScore=score;persist();
+ openModal(`<div class="emblem">${icon}</div><div class="episode">${subtitle}</div><h2>${title}</h2><p>${text}</p><div class="card"><div class="statline"><span>Reconstrução</span><b>${s.progress}%</b></div><div class="statline"><span>Habitantes</span><b>${s.pop}</b></div><div class="statline"><span>Esperança / Corrupção</span><b>${s.hope}% / ${s.corruption}%</b></div><div class="statline"><span>Incursões repelidas</span><b>${s.raidsWon}</b></div><div class="statline"><span>Grandes obras concluídas</span><b>${s.completed.length}/6</b></div><div class="statline"><span>Pontuação</span><b>${score}</b></div></div><button class="btn" data-task="export">SALVAR CRÔNICA</button><button class="btn secondary" data-task="newgame">JOGAR NOVAMENTE</button><button class="btn ghost" data-task="menu">MENU INICIAL</button>`);
+}
+function saveExport(){if(!state)return;let content=JSON.stringify({game:'Portomonte: Reconstrução',format:1,savedAt:new Date().toISOString(),state},null,2);let a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type:'application/json'}));a.href=url;a.download=`Portomonte_Dia_${state.day}_Save.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);toast('Crônica exportada para o dispositivo.');}
+function importSave(){let input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{let txt=await input.files[0].text();let obj=JSON.parse(txt),s=obj.state||obj;if(!validSave(s))throw new Error('Formato de save inválido');persist();applySave(s);persist();toast('Save importado. Bem-vindo de volta!')}catch(e){toast(`Não foi possível importar: ${e.message}`)}};input.click();}
+function confirmRestart(){openModal(`<div class="emblem">⚠</div><div class="episode">Confirmar decisão</div><h2>Apagar esta campanha?</h2><p>Isso substituirá seu progresso local. Exporte o save antes, caso deseje continuar em outro momento.</p><button class="btn danger" data-task="newgame">SIM, COMEÇAR DE NOVO</button><button class="btn secondary" data-task="close">CANCELAR</button>`)}
+function menuAgain(){closeModal();showMenu();}
+function handleTask(task){if(task==='close'){closeModal();return}if(task==='cancel-building'){buildMode=null;renderCity();return}if(task==='council'){switchPage('council');return}if(task==='build'){switchPage('build');return}if(task==='guide'){showGuide();return}if(task==='export'){saveExport();return}if(task==='import'){importSave();return}if(task==='menu'){menuAgain();return}if(task==='restart'){confirmRestart();return}if(task==='newgame'){closeModal();chooseDifficulty();return}
+ if(!selected)return;const {x,y}=selected;if(task==='clear')clearRubble(x,y);if(task==='repair')repair(x,y);if(task==='assign-plus')assign(x,y,1);if(task==='assign-minus')assign(x,y,-1);}
+window.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.hasAttribute('data-event-choice')){chooseEvent(Number(b.dataset.eventChoice));return}
+ if(b.dataset.newDiff){closeModal();startGame(b.dataset.newDiff);return}
+ if(b.dataset.task){handleTask(b.dataset.task);return}
+ if(b.dataset.page){switchPage(b.dataset.page);return}
+ if(b.dataset.filter){filter=b.dataset.filter;renderBuild();return}
+ if(b.dataset.bld){buildMode=b.dataset.bld;selected=null;switchPage('city');renderCity();toast(`Selecione um terreno livre para ${B[buildMode].name}.`);return}
+ if(b.dataset.project){activateProject(b.dataset.project);return}
+ if(b.dataset.policy){activatePolicy(b.dataset.policy);return}
+});
+$('new-game').addEventListener('click',chooseDifficulty);
+$('continue-game').addEventListener('click',()=>{let s=loadStored();if(s)applySave(s);else toast('Nenhuma campanha salva encontrada.')});
+$('how-game').addEventListener('click',showGuide);
+$('end-turn').addEventListener('click',()=>{if(!state||state.gameOver)return;
+ const o=totalOutput(),next=state.day,raid=next%5===0;
+ openModal(`<div class="emblem">${raid?'⚔':'☾'}</div><div class="episode">Fim do dia ${String(next).padStart(2,'0')}</div><h2>${raid?'A noite da incursão':'Ao cair da noite'}</h2><p>Os habitantes trabalharão, consumirã​o provisões e enfrentarão os perigos noturnos.</p><div class="card"><div class="statline"><span>Madeira / Pedra</span><b>${o.wood>=0?'+':''}${o.wood} / ${o.stone>=0?'+':''}${o.stone}</b></div><div class="statline"><span>Alimento produzido</span><b>${o.food>=0?'+':''}${o.food}</b></div><div class="statline"><span>Consumo dos habitantes</span><b class="bad">-${Math.ceil(state.pop/3)} 🍞</b></div><div class="statline"><span>Moedas previstas</span><b>+${o.gold}</b></div><div class="statline"><span>Defesa / Ameaça</span><b>${defense(state)} / ${state.danger}%</b></div></div>${raid?'<p class="bad"><b>Atenção:</b> incursão contra a cidade esta noite. O poder do ataque varia conforme perigo, corrupção e dia da campanha.</p>':''}<button class="btn" data-task="confirm-day">${next===30?'ENCERRAR CAMPANHA':'AVANÇAR PARA O PRÓXIMO DIA'}</button><button class="btn secondary" data-task="close">VOLTAR À CIDADE</button>`);
+});
+// A ação de confirmação usa um delegador separado para não depender de elementos recriados.
+document.addEventListener('click',e=>{if(e.target.closest('[data-task="confirm-day"]'))processDay()},true);
+const canvas=$('city'), ctx=canvas.getContext('2d',{alpha:false});
+function shade(c,amount){let n=parseInt(c.substring(1),16),r=(n>>16),g=(n>>8)&255,b=n&255;return `rgb(${clamp(r+amount,0,255)},${clamp(g+amount,0,255)},${clamp(b+amount,0,255)})`}
+function drawRoof(x,y,sz,t){let b=B[t.id]||B.house;let m=sz*.12,xx=x+m,yy=y+sz*.21,w=sz-2*m,h=sz*.58;
+ ctx.fillStyle='#0b1a1b77';ctx.fillRect(xx+2,yy+7,w,h*.86);
+ ctx.fillStyle=t.hp<40?'#6b7776':shade(b.roof,-36);ctx.fillRect(xx,yy+5,w,h*.8);
+ ctx.fillStyle=t.hp<40?'#92938a':b.roof;
+ ctx.beginPath();ctx.moveTo(xx-2,yy+h*.28);ctx.lineTo(x+sz/2,yy-h*.05);ctx.lineTo(xx+w+2,yy+h*.28);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#f4e0b977';ctx.lineWidth=1;ctx.stroke();
+ ctx.fillStyle='#13282d';ctx.fillRect(x+sz*.42,y+sz*.57,sz*.17,sz*.2);
+ ctx.fillStyle='#f6db92';ctx.fillRect(x+sz*.19,y+sz*.47,sz*.11,sz*.11);ctx.fillRect(x+sz*.7,y+sz*.47,sz*.11,sz*.11);
+ let glyph=b.icon;
+ ctx.font=`${Math.floor(sz*.33)}px system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='#021015';ctx.shadowBlur=4;ctx.fillStyle='#fff4d3';ctx.fillText(glyph,x+sz*.5,y+sz*.38);ctx.shadowBlur=0;
+ if(t.hp<100){ctx.fillStyle='#c9634d';ctx.fillRect(x+3,y+sz-6,(sz-6)*Math.max(.05,t.hp/100),2)}
+ if((t.workers||0)>0){ctx.fillStyle='#f6db92';for(let i=0;i<Math.min(t.workers,3);i++){ctx.beginPath();ctx.arc(x+sz*.25+i*sz*.17,y+sz*.88,1.8,0,Math.PI*2);ctx.fill();}}
+}
+function drawSea(x,y,z,gx,gy){ctx.fillStyle='#3d747a';ctx.fillRect(x,y,z,z);let near=(gx===8&&gy>2);ctx.fillStyle='#b04d55';ctx.globalAlpha=.15+.07*Math.sin(animTime/800+gy);ctx.fillRect(x,y,z,z);ctx.globalAlpha=1;
+ ctx.strokeStyle='#c9d5ba88';ctx.lineWidth=1.2;for(let i=0;i<3;i++){let xo=x+(i*19+Math.sin(animTime/700+gy)*4)%z, yo=y+(i*13+gy*7)%z;ctx.beginPath();ctx.moveTo(xo,yo);ctx.quadraticCurveTo(xo+5,yo-2,xo+10,yo);ctx.stroke();}
+}
+function paintMap(){if(!state||currentPage!=='city'||!$('playing').classList.contains('active'))return;let width=canvas.clientWidth||360;if(width<10)return;let dpr=Math.min(2.25,window.devicePixelRatio||1),px=Math.round(width*dpr);if(canvas.width!==px||canvas.height!==px){canvas.width=px;canvas.height=px;}
+ ctx.setTransform(dpr,0,0,dpr,0,0);let z=width/SIZE;
+ ctx.fillStyle='#486b50';ctx.fillRect(0,0,width,width);
+ for(let gy=0;gy<SIZE;gy++)for(let gx=0;gx<SIZE;gx++){
+  let t=state.world[gy][gx],x=gx*z,y=gy*z;
+  let color={grass:'#5d8064',fertile:'#7d8958',road:'#8f8a69',coast:'#bba681',stone:'#7a8881',sea:'#407277'}[t.terrain]||'#607461';
+  ctx.fillStyle=shade(color,Math.round(noise(gx,gy)*15-7));ctx.fillRect(x,y,z+1,z+1);
+  if(t.terrain==='sea')drawSea(x,y,z,gx,gy);
+  else{
+   if(t.terrain==='road'){ctx.fillStyle='#b0a38555';ctx.fillRect(x+z*.18,y,z*.65,z);ctx.fillStyle='#e1cfab40';ctx.fillRect(x+z*.5,y,z*.08,z)}
+   if(t.terrain==='coast'){ctx.fillStyle='#d3ba96';ctx.fillRect(x+z*.84,y,z*.17,z);ctx.fillStyle='#eef0c788';ctx.fillRect(x+z*.96,y,z*.04,z)}
+   for(let k=0;k<5;k++){let rx=x+noise(gx,gy,k+1)*z,ry=y+noise(gx,gy,k+15)*z;ctx.fillStyle=k%2?'#183f3d35':'#cbb88b3a';ctx.fillRect(rx,ry,1.7,1.8)}
+   if(t.kind==='empty'&&t.terrain!=='road'&&noise(gx,gy,30)>.45){let tx=x+z*.48,ty=y+z*.43;
+     if(t.terrain==='stone'){ctx.fillStyle='#bbc1ad';ctx.beginPath();ctx.moveTo(tx-4,ty+5);ctx.lineTo(tx-2,ty-5);ctx.lineTo(tx+5,ty-3);ctx.lineTo(tx+7,ty+5);ctx.fill();}
+     else{ctx.strokeStyle='#416d52';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(tx,ty+7);ctx.lineTo(tx,ty-4);ctx.stroke();ctx.fillStyle='#2c6454';ctx.beginPath();ctx.arc(tx,ty-3,6+noise(gx,gy,50)*2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8caf75';ctx.fillRect(tx-2,ty-7,2,3);}}
+  }
+  if(t.kind==='rubble'){ctx.fillStyle='#7a6457';ctx.fillRect(x+z*.13,y+z*.34,z*.73,z*.42);for(let k=0;k<8;k++){let xx=x+z*(.14+noise(gx,gy,k+5)*.68),yy=y+z*(.3+noise(gx,gy,k+7)*.55);ctx.fillStyle=k%2?'#c8ac89':'#3c494a';ctx.fillRect(xx,yy,z*.12,z*.13)}ctx.font=`${z*.28}px sans-serif`;ctx.textAlign='center';ctx.fillText('✕',x+z*.51,y+z*.28);}
+  if(t.kind==='ruin'){ctx.fillStyle='#a79a83';ctx.fillRect(x+z*.11,y+z*.38,z*.77,z*.39);ctx.fillStyle='#57473e';ctx.fillRect(x+z*.32,y+z*.52,z*.15,z*.25);ctx.fillStyle='#333b38';ctx.beginPath();ctx.moveTo(x+z*.09,y+z*.38);ctx.lineTo(x+z*.36,y+z*.14);ctx.lineTo(x+z*.53,y+z*.29);ctx.lineTo(x+z*.76,y+z*.16);ctx.lineTo(x+z*.92,y+z*.41);ctx.fill();ctx.fillStyle='#f3d593';ctx.font=`bold ${z*.36}px serif`;ctx.textAlign='center';ctx.fillText(B[t.id].icon,x+z*.5,y+z*.48);ctx.strokeStyle='#fbd19b66';ctx.strokeRect(x+3,y+3,z-6,z-6);}
+  if(t.kind==='building')drawRoof(x,y,z,t);
+  ctx.strokeStyle='#1a2e2d24';ctx.lineWidth=.8;ctx.strokeRect(x+.5,y+.5,z,z);
+  if(buildMode&&t.kind==='empty'&&t.terrain!=='sea'){let valid=(!B[buildMode].coast||t.terrain==='coast')&&(!(buildMode==='quarry'&&t.terrain!=='stone'))&&(!(buildMode==='farm'&&t.terrain==='stone'));
+    ctx.fillStyle=valid?'#9cf0a71c':'#ff575019';ctx.fillRect(x+2,y+2,z-4,z-4);ctx.strokeStyle=valid?'#c6f6ab6e':'#e789726b';ctx.lineWidth=1;ctx.strokeRect(x+3,y+3,z-6,z-6);}
+  if(selected&&selected.x===gx&&selected.y===gy){ctx.strokeStyle='#ffe4a1';ctx.lineWidth=2.5;ctx.strokeRect(x+2.5,y+2.5,z-5,z-5);ctx.fillStyle='#fff5d7';for(let [dx,dy] of [[4,4],[z-4,4],[4,z-4],[z-4,z-4]]){ctx.fillRect(x+dx-2,y+dy-2,4,4)}}
+ }
+ ctx.setTransform(1,0,0,1,0,0);
+}
+canvas.addEventListener('pointerup',e=>{if(!state||state.gameOver)return;const r=canvas.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)*SIZE/r.width),y=Math.floor((e.clientY-r.top)*SIZE/r.height);if(x<0||y<0||x>=SIZE||y>=SIZE)return;
+ if(buildMode){doBuild(buildMode,x,y);return;}selected={x,y};renderCity();});
+window.addEventListener('resize',paintMap);
+function tick(t){animTime=t;if(state&&currentPage==='city'&&$('playing').classList.contains('active')&&(t-(window._lastDraw||0))>210){window._lastDraw=t;paintMap()}requestAnimationFrame(tick)}requestAnimationFrame(tick);
+async function setupOffline(){let badge=$('offline-menu');if(!('serviceWorker' in navigator)){badge.textContent='⌁ Jogo local: abra pelo GitHub Pages para instalar';return}
+ try{let reg=await navigator.serviceWorker.register('./sw.js',{scope:'./'});await navigator.serviceWorker.ready;
+  let cache=await caches.open('portomonte-pwa-v1');const main=await cache.match('./index.html');
+  if(main){offlineReady=true;badge.textContent='✓ PRONTO PARA JOGAR SEM INTERNET';badge.classList.remove('wait');}
+  else{badge.textContent='◌ Preparando arquivos para jogar offline…';setTimeout(setupOffline,1800);}
+ }catch(e){badge.textContent='⌁ Offline indisponível neste endereço';badge.classList.add('wait')}
+}
+if(location.protocol==='http:'||location.protocol==='https:')setupOffline();else {$('offline-menu').textContent='✓ Arquivos locais · carregue todos os arquivos do pacote';$('offline-menu').classList.remove('wait')}
+showMenu();
+</script></body></html>
