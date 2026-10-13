@@ -1,5 +1,5 @@
 {
-  "id": "./",
+  "id": "/portomonte-reconstrucao/",
   "name": "Portomonte: Reconstrução",
   "short_name": "Portomonte",
   "description": "Construa, proteja e governe Portomonte em 30 dias. RPG de estratégia no universo da Carcaça, inteiramente offline após instalar.",
@@ -11,7 +11,17 @@
   "theme_color": "#10242b",
   "lang": "pt-BR",
   "icons": [
-    {"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
