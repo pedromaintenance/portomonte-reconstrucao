@@ -1,5 +1,5 @@
 /* Portomonte: Reconstrução — PWA offline-first */
-const CACHE_NAME='portomonte-pwa-v1';
+const CACHE_NAME='portomonte-pwa-v2';
 const CORE=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const names=await caches.keys();await Promise.all(names.filter(k=>k.startsWith('portomonte-pwa-')&&k!==CACHE_NAME).map(k=>caches.delete(k)));await self.clients.claim()})())});
